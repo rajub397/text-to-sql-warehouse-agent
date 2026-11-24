@@ -8,5 +8,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install -r requirements.txt pytest
-      - run: pytest -q
+      - run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pytest
+          python3 -m py_compile src/*.py
+          if [ -d tests ] && [ -n "$(find tests -name 'test_*.py')" ]; then pytest -q; fi
