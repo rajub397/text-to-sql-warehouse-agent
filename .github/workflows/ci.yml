@@ -8,8 +8,18 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: |
+      - name: Install & Test
+        run: |
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           pip install pytest
           python3 -m py_compile src/*.py
           if [ -d tests ] && [ -n "$(find tests -name 'test_*.py')" ]; then pytest -q; fi
+      - name: Run Live Cloud Demo
+        run: |
+          python3 src/warehouse_setup.py | tee demo_output.txt
+          python3 src/agent.py | tee -a demo_output.txt
+      - name: Upload Demo Output Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: text-to-sql-demo-output
+          path: demo_output.txt
